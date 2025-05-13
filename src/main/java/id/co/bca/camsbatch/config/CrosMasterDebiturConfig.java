@@ -1,49 +1,32 @@
-package id.co.bca.camsbatch.configuration;
+package id.co.bca.camsbatch.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.SkipListener;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.database.JpaItemWriter;
-import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
-import id.co.bca.camsbatch.dto.CrosMasterDebiturInput;
-import id.co.bca.camsbatch.model.CrosMasterDebitur;
+import id.co.bca.camsbatch.domain.dto.CrosMasterDebiturInput;
+import id.co.bca.camsbatch.domain.model.CrosMasterDebitur;
 import id.co.bca.camsbatch.processor.CrosMasterDebiturProcessor;
-import jakarta.persistence.EntityManagerFactory;
-
 @Configuration
 public class CrosMasterDebiturConfig {
-
-    private final Logger logger = LoggerFactory.getLogger("BatchErrorLogger");
-    private final JobRepository jobRepository;
-    private final PlatformTransactionManager transactionManager;
-    private final EntityManagerFactory entityManagerFactory;
 
     @Value("${file.input}/Cros Debitur.txt")
     private Resource crosMasterDebiturResource;
 
-    public CrosMasterDebiturConfig(JobRepository jobRepository, PlatformTransactionManager transactionManager,
-        EntityManagerFactory entityManagerFactory) {
-            this.jobRepository = jobRepository;
-            this.transactionManager = transactionManager;
-            this.entityManagerFactory = entityManagerFactory;
+    private final BatchCommonConfig batchCommonConfig;
+
+    public CrosMasterDebiturConfig(BatchCommonConfig batchCommonConfig) {
+        this.batchCommonConfig = batchCommonConfig;
     }
 
+    /**
+     * Creates and configures the reader for Cros Master Debitur data
+     */
     @Bean
     public FlatFileItemReader<CrosMasterDebiturInput> crosMasterDebiturReader() {
         return new FlatFileItemReaderBuilder<CrosMasterDebiturInput>()
@@ -60,58 +43,31 @@ public class CrosMasterDebiturConfig {
             .build();
     }
 
+    /**
+     * Creates and configures the processor for Cros Master Debitur data
+     */
     @Bean
     public CrosMasterDebiturProcessor crosMasterDebiturProcessor() {
         return new CrosMasterDebiturProcessor();
     }
 
-    @Bean
-    public JpaItemWriter<CrosMasterDebitur> crosMasterDebiturWriter() {
-        return new JpaItemWriterBuilder<CrosMasterDebitur>()
-            .entityManagerFactory(entityManagerFactory)
-            .usePersist(true)
-            .build();
-    }
-
+    /**
+     * Creates the step for Cros Master Debitur processing
+     */
     @Bean
     public Step crosMasterDebiturStep() {
-        StepBuilder stepBuilder = new StepBuilder("crosMasterDebiturStep", jobRepository);
-        return stepBuilder
-                .<CrosMasterDebiturInput, CrosMasterDebitur>chunk(10, transactionManager)
-                .reader(crosMasterDebiturReader())
-                .processor(crosMasterDebiturProcessor())
-                .writer(crosMasterDebiturWriter())
-                .faultTolerant()
-                .skip(FlatFileParseException.class)
-                .skip(DataIntegrityViolationException.class)
-                .skipLimit(50)
-                .listener(new SkipListener<CrosMasterDebiturInput, CrosMasterDebitur>() {
-
-                    @Override
-                    public void onSkipInRead(Throwable t) {
-                        if (t instanceof FlatFileParseException) {
-                            FlatFileParseException exception = (FlatFileParseException) t;
-                            logger.error("Skipping line {} due to incorrect token count: {}", 
-                                    exception.getLineNumber(), exception.getInput());
-                        }
-                    }
-
-                    @Override
-                    public void onSkipInWrite(CrosMasterDebitur item, Throwable t) {
-                        logger.error("Error writing item: {}", item, t);
-                    }
-
-                    @Override
-                    public void onSkipInProcess(CrosMasterDebiturInput item, Throwable t) {
-                        logger.error("Error processing item: {}", item, t);
-                    }
-                })
-                .transactionAttribute(new DefaultTransactionAttribute() {{
-                    setPropagationBehavior(Propagation.REQUIRED.value());
-                    setIsolationLevel(Isolation.READ_COMMITTED.value());
-                    setTimeout(180); // 3-minute timeout
-                }})
-                .build();
+        // Get standard transaction settings from common config
+        DefaultTransactionAttribute txAttributes = batchCommonConfig.getStandardTransactionAttributes();
+        
+        // Create and configure the step with common patterns
+        return batchCommonConfig.<CrosMasterDebiturInput, CrosMasterDebitur>configureStepBuilder(
+                "crosMasterDebiturStep",
+                crosMasterDebiturReader(),
+                crosMasterDebiturProcessor(),
+                batchCommonConfig.<CrosMasterDebitur>createJpaWriter(),
+                10) // chunk size
+            .transactionAttribute(txAttributes)
+            .build();
     }
     
 }

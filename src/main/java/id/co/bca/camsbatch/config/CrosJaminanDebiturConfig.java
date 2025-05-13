@@ -1,4 +1,4 @@
-package id.co.bca.camsbatch.configuration;
+package id.co.bca.camsbatch.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +21,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
-import id.co.bca.camsbatch.dto.CrosJaminanDebiturInput;
-import id.co.bca.camsbatch.model.CrosJaminanDebitur;
+import id.co.bca.camsbatch.domain.dto.CrosJaminanDebiturInput;
+import id.co.bca.camsbatch.domain.model.CrosJaminanDebitur;
 import id.co.bca.camsbatch.processor.CrosJaminanDebiturProcessor;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.extern.slf4j.Slf4j;

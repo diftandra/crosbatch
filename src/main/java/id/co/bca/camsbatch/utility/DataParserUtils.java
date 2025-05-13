@@ -1,4 +1,4 @@
-package id.co.bca.camsbatch.shared;
+package id.co.bca.camsbatch.utility;
 
 import java.math.BigDecimal;
 import java.text.ParseException;

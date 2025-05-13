@@ -1,4 +1,4 @@
-package id.co.bca.camsbatch.configuration;
+package id.co.bca.camsbatch.config;
 
 
 import org.slf4j.Logger;
@@ -24,7 +24,6 @@ public class BatchConfig {
 
     private final Logger logger = LoggerFactory.getLogger("BatchErrorLogger");
     private final JobRepository jobRepository;
-    private final PlatformTransactionManager transactionManager;
     private final CrosMasterDebiturConfig crosMasterDebiturConfig;
     private final CrosJaminanDebiturConfig crosJaminanDebiturConfig;
     private final CrosMasterKomitmenConfig crosMasterKomitmenConfig;
@@ -33,7 +32,6 @@ public class BatchConfig {
                        CrosMasterDebiturConfig crosMasterDebiturConfig, CrosJaminanDebiturConfig crosJaminanDebiturConfig,
                        CrosMasterKomitmenConfig crosMasterKomitmenConfig) {
         this.jobRepository = jobRepository;
-        this.transactionManager = transactionManager;
         this.crosMasterDebiturConfig = crosMasterDebiturConfig;
         this.crosJaminanDebiturConfig = crosJaminanDebiturConfig;
         this.crosMasterKomitmenConfig = crosMasterKomitmenConfig;
@@ -72,7 +70,7 @@ public class BatchConfig {
         };
     }
 
-    @Bean
+    @Bean(name = "importJob")
     public Job importJob() {
         JobBuilder jobBuilder = new JobBuilder("importJob", jobRepository);
 
@@ -89,6 +87,5 @@ public class BatchConfig {
                 .end()
                 .build();
     }
-    
 
 }

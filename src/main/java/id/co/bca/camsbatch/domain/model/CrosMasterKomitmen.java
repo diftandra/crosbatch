@@ -1,4 +1,4 @@
-package id.co.bca.camsbatch.model;
+package id.co.bca.camsbatch.domain.model;
 
 import java.math.BigDecimal;
 import java.util.Date;

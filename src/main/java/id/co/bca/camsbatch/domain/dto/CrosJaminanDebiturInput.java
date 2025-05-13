@@ -1,4 +1,4 @@
-package id.co.bca.camsbatch.dto;
+package id.co.bca.camsbatch.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

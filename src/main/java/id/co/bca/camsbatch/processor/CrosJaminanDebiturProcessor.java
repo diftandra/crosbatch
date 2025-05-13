@@ -2,9 +2,9 @@ package id.co.bca.camsbatch.processor;
 
 import org.springframework.batch.item.ItemProcessor;
 
-import id.co.bca.camsbatch.dto.CrosJaminanDebiturInput;
-import id.co.bca.camsbatch.model.CrosJaminanDebitur;
-import id.co.bca.camsbatch.shared.DataParserUtils;
+import id.co.bca.camsbatch.domain.dto.CrosJaminanDebiturInput;
+import id.co.bca.camsbatch.domain.model.CrosJaminanDebitur;
+import id.co.bca.camsbatch.utility.DataParserUtils;
 
 public class CrosJaminanDebiturProcessor implements ItemProcessor<CrosJaminanDebiturInput, CrosJaminanDebitur> {
     
