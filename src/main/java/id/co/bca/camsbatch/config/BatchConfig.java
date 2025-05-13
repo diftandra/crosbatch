@@ -27,14 +27,24 @@ public class BatchConfig {
     private final CrosMasterDebiturConfig crosMasterDebiturConfig;
     private final CrosJaminanDebiturConfig crosJaminanDebiturConfig;
     private final CrosMasterKomitmenConfig crosMasterKomitmenConfig;
+    private final CrosMasterPinjamanConfig crosMasterPinjamanConfig;
+    private final CrosNplConfig crosNplConfig;
+    private final CrosPemegangSahamConfig crosPemegangSahamConfig;
+    private final CrosRelasiJaminanConfig crosRelasiJaminanConfig;
 
     public BatchConfig(JobRepository jobRepository, PlatformTransactionManager transactionManager,
                        CrosMasterDebiturConfig crosMasterDebiturConfig, CrosJaminanDebiturConfig crosJaminanDebiturConfig,
-                       CrosMasterKomitmenConfig crosMasterKomitmenConfig) {
+                       CrosMasterKomitmenConfig crosMasterKomitmenConfig, CrosMasterPinjamanConfig crosMasterPinjamanConfig,
+                       CrosNplConfig crosNplConfig, CrosPemegangSahamConfig crosPemegangSahamConfig,
+                       CrosRelasiJaminanConfig crosRelasiJaminanConfig) {
         this.jobRepository = jobRepository;
         this.crosMasterDebiturConfig = crosMasterDebiturConfig;
         this.crosJaminanDebiturConfig = crosJaminanDebiturConfig;
         this.crosMasterKomitmenConfig = crosMasterKomitmenConfig;
+        this.crosMasterPinjamanConfig = crosMasterPinjamanConfig;
+        this.crosNplConfig = crosNplConfig;
+        this.crosPemegangSahamConfig = crosPemegangSahamConfig;
+        this.crosRelasiJaminanConfig = crosRelasiJaminanConfig;
     }
 
     @Bean
@@ -78,6 +88,10 @@ public class BatchConfig {
             .start(crosMasterDebiturConfig.crosMasterDebiturStep())
             .next(crosJaminanDebiturConfig.crosJaminanDebiturStep())
             .next(crosMasterKomitmenConfig.crosMasterKomitmenStep())
+            .next(crosMasterPinjamanConfig.crosMasterPinjamanStep())
+            .next(crosNplConfig.crosNplStep())
+            .next(crosPemegangSahamConfig.crosPemegangSahamStep())
+            .next(crosRelasiJaminanConfig.crosRelasiJaminanStep())
             .end();
 
         return jobBuilder
