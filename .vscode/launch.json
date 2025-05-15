@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-CamsbatchApplication<camsbatch>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "id.co.bca.camsbatch.CamsbatchApplication",
+            "projectName": "camsbatch",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
